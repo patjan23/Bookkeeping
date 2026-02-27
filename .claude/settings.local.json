@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet new:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(\"D:/code/C#/desktop/wpf/test/.gitignore\":*)",
+      "Bash(git:*)",
+      "Bash(git rm:*)",
+      "Bash(where.exe gh:*)"
+    ]
+  }
+}
