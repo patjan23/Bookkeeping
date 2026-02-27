@@ -1,0 +1,154 @@
+<UserControl x:Class="Bookkeeping.App.Views.CategoriesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.Name="CategoriesPage"
+             Background="{StaticResource AppBgBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ── List ── -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                    Padding="24,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Categories" Style="{StaticResource H1}" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1"
+                            AutomationProperties.AutomationId="Btn_AddCategory"
+                            AutomationProperties.Name="Btn_AddCategory"
+                            Content="+ Add Category"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding StartAddCommand}"/>
+                </Grid>
+            </Border>
+
+            <DataGrid Grid.Row="1"
+                      AutomationProperties.Name="CategoriesGrid"
+                      ItemsSource="{Binding Categories}"
+                      SelectedItem="{Binding SelectedCategory}"
+                      Style="{StaticResource ModernGrid}"
+                      ColumnHeaderStyle="{StaticResource GridColumnHeader}"
+                      Margin="24,16,24,0">
+                <DataGrid.Columns>
+
+                    <!-- Color swatch -->
+                    <DataGridTemplateColumn Header="Color" Width="56">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Width="14" Height="14" HorizontalAlignment="Center"
+                                         Fill="{Binding Color, Converter={StaticResource HexToBrush}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="Name"  Width="*"   Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Type"  Width="100" Binding="{Binding Type}"/>
+
+                    <DataGridTemplateColumn Header="" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Edit"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="8,4" FontSize="12"
+                                            Command="{Binding DataContext.StartEditCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            Margin="2"/>
+                                    <Button Content="Del"
+                                            Style="{StaticResource DangerButton}"
+                                            Padding="8,4" FontSize="12"
+                                            Command="{Binding DataContext.DeleteCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            Margin="2"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock Grid.Row="2" Text="{Binding StatusMessage}"
+                       Margin="24,4,24,12" FontSize="12"
+                       Visibility="{Binding StatusMessage, Converter={StaticResource StringNotEmptyToVisibility}}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource AccentGreenBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsStatusError}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+
+        <!-- ── Edit panel ── -->
+        <Border Grid.Column="1"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1,0,0,0"
+                Padding="24"
+                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="Category Details" Style="{StaticResource H2}" Margin="0,0,0,20"/>
+
+                <TextBlock Text="Name" Style="{StaticResource FormLabel}"/>
+                <TextBox AutomationProperties.AutomationId="Field_CategoryName"
+                         AutomationProperties.Name="Field_CategoryName"
+                         Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="Type" Style="{StaticResource FormLabel}"/>
+                <ComboBox AutomationProperties.AutomationId="Field_CategoryType"
+                          ItemsSource="{Binding TransactionTypes}"
+                          SelectedItem="{Binding EditType}"
+                          Style="{StaticResource InputCombo}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="Color (hex, e.g. #38A169)" Style="{StaticResource FormLabel}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <TextBox Text="{Binding EditColor, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource InputBox}" Width="160" Margin="0,0,8,0"/>
+                    <Ellipse Width="20" Height="20" VerticalAlignment="Center"
+                             Fill="{Binding EditColor, Converter={StaticResource HexToBrush}}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Save"
+                            AutomationProperties.AutomationId="Btn_SaveCategory"
+                            AutomationProperties.Name="Btn_SaveCategory"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SaveCommand}"
+                            Margin="0,0,10,0"/>
+                    <Button Content="Cancel"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding CancelEditCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Loading overlay -->
+        <Border Grid.ColumnSpan="2"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
+                Style="{StaticResource LoadingOverlay}">
+            <ProgressBar IsIndeterminate="True" Width="200" Height="4"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         Foreground="{StaticResource PrimaryBrush}"/>
+        </Border>
+    </Grid>
+</UserControl>

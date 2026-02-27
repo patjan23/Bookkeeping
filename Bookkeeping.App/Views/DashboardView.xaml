@@ -1,0 +1,98 @@
+<UserControl x:Class="Bookkeeping.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.Name="DashboardPage"
+             Background="{StaticResource AppBgBrush}">
+
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="32,28" MaxWidth="900">
+
+                <!-- Header -->
+                <TextBlock Text="Dashboard" Style="{StaticResource H1}"/>
+                <TextBlock Text="{Binding MonthLabel}" Style="{StaticResource Caption}" Margin="0,0,0,24"/>
+
+                <!-- KPI Cards row -->
+                <UniformGrid Columns="3" Margin="0,0,0,28">
+
+                    <Border Style="{StaticResource Card}" Margin="0,0,10,0"
+                            AutomationProperties.Name="Card_Income">
+                        <StackPanel>
+                            <TextBlock Text="INCOME THIS MONTH" Style="{StaticResource Caption}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding TotalIncome, StringFormat=C}"
+                                       FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentGreenBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="5,0"
+                            AutomationProperties.Name="Card_Expenses">
+                        <StackPanel>
+                            <TextBlock Text="EXPENSES THIS MONTH" Style="{StaticResource Caption}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding TotalExpenses, StringFormat=C}"
+                                       FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentRedBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="10,0,0,0"
+                            AutomationProperties.Name="Card_Net">
+                        <StackPanel>
+                            <TextBlock Text="NET" Style="{StaticResource Caption}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding Net, StringFormat=C}"
+                                       FontSize="26" FontWeight="Bold">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource AccentGreenBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsNetNegative}" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Quick actions card -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Quick Actions" Style="{StaticResource H2}" Margin="0,0,0,16"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                            <Button AutomationProperties.AutomationId="Btn_QuickAddTransaction"
+                                    AutomationProperties.Name="Btn_QuickAddTransaction"
+                                    Content="+ Add Transaction"
+                                    Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding QuickAddTransactionCommand}"
+                                    Margin="0,0,12,0"/>
+                            <Button Content="View All Transactions"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding GoToTransactionsCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Inline status -->
+                <TextBlock Text="{Binding StatusMessage}"
+                           Foreground="{StaticResource ErrorBrush}"
+                           Visibility="{Binding IsStatusError, Converter={StaticResource BoolToVisibility}}"
+                           Margin="0,16,0,0" FontSize="13"/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Busy overlay -->
+        <Border Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
+                Style="{StaticResource LoadingOverlay}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="240" Height="4"
+                             Foreground="{StaticResource PrimaryBrush}"/>
+                <TextBlock Text="Loading…" Foreground="White" Margin="0,10,0,0"
+                           HorizontalAlignment="Center" FontSize="13"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

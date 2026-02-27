@@ -1,0 +1,136 @@
+<UserControl x:Class="Bookkeeping.App.Views.AccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.Name="AccountsPage"
+             Background="{StaticResource AppBgBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ── List ── -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                    Padding="24,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Accounts" Style="{StaticResource H1}" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1"
+                            AutomationProperties.AutomationId="Btn_AddAccount"
+                            AutomationProperties.Name="Btn_AddAccount"
+                            Content="+ Add Account"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding StartAddCommand}"/>
+                </Grid>
+            </Border>
+
+            <DataGrid Grid.Row="1"
+                      AutomationProperties.Name="AccountsGrid"
+                      ItemsSource="{Binding Accounts}"
+                      SelectedItem="{Binding SelectedAccount}"
+                      Style="{StaticResource ModernGrid}"
+                      ColumnHeaderStyle="{StaticResource GridColumnHeader}"
+                      Margin="24,16,24,0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name"    Width="*"   Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Type"    Width="120" Binding="{Binding Type}"/>
+                    <DataGridTextColumn Header="Balance" Width="120"
+                                        Binding="{Binding Balance, StringFormat=C}"/>
+                    <DataGridTemplateColumn Header="" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Edit"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="8,4" FontSize="12"
+                                            Command="{Binding DataContext.StartEditCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            Margin="2"/>
+                                    <Button Content="Del"
+                                            Style="{StaticResource DangerButton}"
+                                            Padding="8,4" FontSize="12"
+                                            Command="{Binding DataContext.DeleteCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            Margin="2"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock Grid.Row="2" Text="{Binding StatusMessage}"
+                       Margin="24,4,24,12" FontSize="12">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource AccentGreenBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsStatusError}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+
+        <!-- ── Edit panel ── -->
+        <Border Grid.Column="1"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1,0,0,0"
+                Padding="24"
+                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="Account Details" Style="{StaticResource H2}" Margin="0,0,0,20"/>
+
+                <TextBlock Text="Name" Style="{StaticResource FormLabel}"/>
+                <TextBox AutomationProperties.AutomationId="Field_AccountName"
+                         Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="Type" Style="{StaticResource FormLabel}"/>
+                <ComboBox ItemsSource="{Binding AccountTypes}"
+                          SelectedItem="{Binding EditType}"
+                          Style="{StaticResource InputCombo}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="Opening Balance" Style="{StaticResource FormLabel}"/>
+                <TextBox Text="{Binding EditBalance, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource InputBox}" Margin="0,0,0,20"/>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Save"
+                            AutomationProperties.AutomationId="Btn_SaveAccount"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SaveCommand}"
+                            Margin="0,0,10,0"/>
+                    <Button Content="Cancel"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding CancelEditCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Loading overlay -->
+        <Border Grid.ColumnSpan="2"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
+                Style="{StaticResource LoadingOverlay}">
+            <ProgressBar IsIndeterminate="True" Width="200" Height="4"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         Foreground="{StaticResource PrimaryBrush}"/>
+        </Border>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "wpf-mcp": {
+      "command": "npx",
+      "args": ["-y", "@lobehub/wpf-mcp-server"],
+      "env": {
+        "WPF_APP_PROCESS_NAME": "Bookkeeping.App",
+        "WPF_APP_WINDOW_TITLE": "Bookkeeping",
+        "WPF_AUTOMATION_TIMEOUT_MS": "5000"
+      }
+    }
+  }
+}
