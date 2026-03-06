@@ -78,6 +78,11 @@
         <Setter Property="Background" Value="{StaticResource AccentRedBrush}"/>
     </Style>
 
+    <Style x:Key="LightGreenButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Background" Value="#90EE90"/>
+        <Setter Property="Foreground" Value="#1A5C1A"/>
+    </Style>
+
     <Style x:Key="SecondaryButton" TargetType="Button">
         <Setter Property="Background"   Value="Transparent"/>
         <Setter Property="Foreground"   Value="{StaticResource TextPrimaryBrush}"/>
